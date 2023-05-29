@@ -1,6 +1,7 @@
 #pragma once
 
 #include <memory>
+#include <iterator>
 
 namespace kg
 {
@@ -13,6 +14,86 @@ class vector
     using Alloc = std::allocator_traits<Allocator>;
 
   public:
+    struct iterator {
+        // Needed for LegacyIterator
+
+        using iterator_category = std::random_access_iterator_tag;
+        using value_type = T;
+        using pointer = T*;
+        using reference = T&;
+        using difference_type = std::ptrdiff_t;
+
+        iterator() : m_ptr{nullptr} {}
+
+        iterator(pointer ptr) : m_ptr{ptr} {}
+
+        iterator(const iterator& other) : m_ptr{other.m_ptr} {}
+
+        iterator& operator=(const iterator& other) {
+            m_ptr = other.m_ptr;
+            return *this;
+        }
+
+        ~iterator() = default;
+
+        reference operator*() { return *m_ptr; }
+
+        iterator& operator++() { m_ptr++; return *this; }
+
+        // Needed for LegacyInputIterator
+
+        friend bool operator==(const iterator& lhs, const iterator& rhs) {
+            return (lhs.m_ptr == rhs.m_ptr);
+        }
+
+        friend bool operator!=(const iterator& lhs, const iterator& rhs) {
+            return !(lhs == rhs);
+        }
+
+        pointer operator->() { return m_ptr; }
+
+        // Needed for LegacyBidirectionalIterator
+
+        iterator& operator--() { m_ptr--; return *this; }
+
+        // Needed for RandomAccessIterator
+
+        iterator& operator+=(const difference_type& pos) {
+            m_ptr += pos;
+            return *this;
+        }
+
+        iterator& operator-=(const difference_type& pos) {
+            m_ptr -= pos;
+            return *this;
+        }
+
+        reference operator[](const difference_type& pos) {
+            return m_ptr[pos];
+        }
+
+        friend bool operator<(const iterator& lhs, const iterator& rhs) {
+            return (lhs.m_ptr < rhs.m_ptr);
+        }
+
+        iterator operator+(const difference_type& pos) {
+            iterator ret{m_ptr};
+            return (ret += pos);
+        }
+
+        iterator operator-(const difference_type& pos) {
+            iterator ret{m_ptr};
+            return (ret -= pos);
+        }
+
+        difference_type operator-(const iterator& rhs) {
+            return (m_ptr - rhs.m_ptr);
+        }
+
+      private:
+        pointer m_ptr;
+    };
+
     // Default constructor
     vector() : m_start{nullptr}, m_end{nullptr}, m_capacity{0} {}
 
@@ -80,6 +161,16 @@ class vector
         }
         new (m_end) value_type(std::forward<Args>(args)...);
         ++m_end;
+    }
+
+    iterator begin()
+    {
+        return iterator{m_start};
+    }
+
+    iterator end()
+    {
+        return iterator{m_end};
     }
 
   private:
