@@ -75,10 +75,11 @@ class vector
     template <typename... Args>
     void emplace_back(Args&&... args)
     {
-        if (size() == capacity) {
+        if (size() == capacity()) {
             realloc();
         }
         new (m_end) value_type(std::forward<Args>(args)...);
+        ++m_end;
     }
 
   private:
