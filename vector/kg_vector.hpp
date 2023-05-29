@@ -2,6 +2,7 @@
 
 #include <memory>
 #include <iterator>
+#include <utility>
 
 namespace kg
 {
@@ -98,37 +99,65 @@ class vector
     vector() : m_start{nullptr}, m_end{nullptr}, m_capacity{0} {}
 
     // Copy constructor
-    vector(const vector& other);
+    vector(const vector& other) : m_capacity{other.m_capacity} {
+        m_start = Alloc::allocate(alloc, m_capacity);
+        m_end = m_start;
+        size_t sz = other.size();
+        for (size_t idx = 0; idx < sz; ++idx) {
+            this->push_back(other.at(idx));
+        }
+    }
 
     // Copy assignment constructor
-    vector& operator=(const vector& other);
+    vector& operator=(const vector& other) {
+        if (this != &other) {
+            dealloc();
+
+            m_capacity = other.m_capacity;
+            m_start = Alloc::allocate(alloc, m_capacity);
+            m_end = m_start;
+
+            size_t sz = other.size();
+            for (size_t idx = 0; idx < sz; ++idx) {
+                this->push_back(other.at(idx));
+            }
+        }
+        return *this;
+    }
 
     // Move constructor
-    vector(vector&& other);
+    vector(vector&& other) {
+        m_capacity = std::exchange(other.m_capacity, 0);
+        m_start = std::exchange(other.m_start, nullptr);
+        m_end = std::exchange(other.m_end, nullptr);
+    }
 
     // Move assignment constructor
-    vector& operator=(vector&& other);
+    vector& operator=(vector&& other) {
+        if (this != &other) {
+            dealloc();
+
+            m_capacity = std::exchange(other.m_capacity, 0);
+            m_start = std::exchange(other.m_start, nullptr);
+            m_end = std::exchange(other.m_end, nullptr);
+        }
+        return *this;
+    }
 
     // Destructor
     ~vector()
     {
-        // Destruct each element then deallocate memory
-        value_type* st = m_start;
-        while (st != m_end) {
-            st->~T();
-            ++st;
-        }
-        Alloc::deallocate(alloc, m_start, size());
+        dealloc();
     }
 
     // Current size
-    size_type size()
+    size_type size() const
     {
         return (m_end - m_start);
     }
 
     // Current capacity
-    size_type capacity()
+    size_type capacity() const
     {
         return m_capacity;
     }
@@ -138,7 +167,17 @@ class vector
         return m_start[idx];
     }
 
+    const value_type& operator[](const size_t& idx) const
+    {
+        return m_start[idx];
+    }
+
     value_type& at(const size_t& idx)
+    {
+        return m_start[idx];
+    }
+
+    const value_type& at(const size_t& idx) const
     {
         return m_start[idx];
     }
@@ -197,6 +236,17 @@ class vector
         // Update pointers
         m_start = new_start;
         m_end = m_start + sz;
+    }
+
+    // Destruct each element then deallocate memory
+    void dealloc()
+    {
+        value_type* st = m_start;
+        while (st != m_end) {
+            st->~T();
+            ++st;
+        }
+        Alloc::deallocate(alloc, m_start, size());
     }
 };
 

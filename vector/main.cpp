@@ -60,7 +60,7 @@ int main()
     }
 
     std::cout << "Contents of v before sort are (using for-each): ";
-    for (int& a : v) {
+    for (const int& a : v) {
         std::cout << a << " ";
     }
     std::cout << std::endl;
@@ -68,7 +68,7 @@ int main()
     std::sort(v.begin(), v.end());
 
     std::cout << "Contents of v after sort are (using for-each): ";
-    for (int& a : v) {
+    for (const int& a : v) {
         std::cout << a << " ";
     }
     std::cout << std::endl;
@@ -77,20 +77,32 @@ int main()
     for (int i = 0; i < 5; ++i) {
         v2.emplace_back(std::to_string(i * 100));
     }
+    v2[2] = "Two";
+    v2[3] = std::string{"Three"};
 
     std::cout << "Contents of v2 are:" << std::endl;
     for (int i = 0; i < 5; ++i) {
         std::cout << "v2[" << i << "] = " << v2[i] << std::endl;
     }
 
+    std::cout << "Creating kg::vector<S> v3 and calling push_back 5 times" << std::endl;
     kg::vector<S> v3;
     for (int i = 0; i < 5; ++i) {
         v3.emplace_back(i*10, i*10 + 1);
     }
 
-    std::cout << "Contents of v3 are:" << std::endl;
+    std::cout << "Creating a new vector v4 and copy constructing it from v3" << std::endl;
+    auto v4 = v3;
+    std::cout << "Contents of v4 are:" << std::endl;
     for (int i = 0; i < 5; ++i) {
-        std::cout << "v3[" << i << "] = {" << v3[i].a << ", " << v3[i].b << "}" << std::endl;
+        std::cout << "v4[" << i << "] = {" << v4[i].a << ", " << v4[i].b << "}" << std::endl;
+    }
+
+    std::cout << "Creating a new vector v5 and move constructing it from v3" << std::endl;
+    auto v5 = std::move(v3);
+    std::cout << "Contents of v5 are:" << std::endl;
+    for (int i = 0; i < 5; ++i) {
+        std::cout << "v5[" << i << "] = {" << v5[i].a << ", " << v5[i].b << "}" << std::endl;
     }
 
     return 0;
