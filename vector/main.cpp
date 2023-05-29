@@ -43,6 +43,11 @@ struct S {
         b = std::move(other.b);
         return *this;
     }
+
+    ~S()
+    {
+        std::cout << "Destructor called!" << std::endl;
+    }
 };
 
 int main()
