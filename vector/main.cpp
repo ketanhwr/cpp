@@ -53,11 +53,7 @@ struct S {
 
 int main()
 {
-    kg::vector<int> v;
-    
-    for (int i = 10; i >= 0; --i) {
-        v.push_back(i);
-    }
+    kg::vector<int> v = {10, 9, 8, 7, 6, 5};
 
     std::cout << "Contents of v before sort are (using for-each): ";
     for (const int& a : v) {
@@ -73,19 +69,26 @@ int main()
     }
     std::cout << std::endl;
 
-    kg::vector<std::string> v2;
-    for (int i = 0; i < 5; ++i) {
-        v2.emplace_back(std::to_string(i * 100));
+    kg::vector<std::string> v2{3, "str"};
+    for (int i = 0; i < 2; ++i) {
+        v2.push_back(std::to_string(i * 100));
     }
-    v2[2] = "Two";
-    v2[3] = std::string{"Three"};
+
+    kg::vector<std::string> vs{v2.begin(), v2.end()};
+    vs[2] = "Two";
+    vs[3] = std::string{"Three"};
 
     std::cout << "Contents of v2 are:" << std::endl;
     for (int i = 0; i < 5; ++i) {
         std::cout << "v2[" << i << "] = " << v2[i] << std::endl;
     }
 
-    std::cout << "Creating kg::vector<S> v3 and calling push_back 5 times" << std::endl;
+    std::cout << "Contents of vs are:" << std::endl;
+    for (int i = 0; i < 5; ++i) {
+        std::cout << "vs[" << i << "] = " << vs[i] << std::endl;
+    }
+
+    std::cout << "Creating kg::vector<S> v3 and calling emplace_back 5 times" << std::endl;
     kg::vector<S> v3;
     for (int i = 0; i < 5; ++i) {
         v3.emplace_back(i*10, i*10 + 1);

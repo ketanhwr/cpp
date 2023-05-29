@@ -3,6 +3,7 @@
 #include <memory>
 #include <iterator>
 #include <utility>
+#include <initializer_list>
 
 namespace kg
 {
@@ -148,6 +149,33 @@ class vector
     ~vector()
     {
         dealloc();
+    }
+
+    // Custom constructors
+    explicit vector(size_t n, const value_type& value = value_type()) : m_capacity{n} {
+        m_start = Alloc::allocate(alloc, m_capacity);
+        m_end = m_start;
+        for (size_t idx = 0; idx < n; ++idx) {
+            this->push_back(value);
+        }
+    }
+
+    template <typename InputIt>
+    vector(InputIt first, InputIt last) : m_start{nullptr}, m_end{nullptr}, m_capacity{0} {
+        for (auto it = first; it != last; ++it) {
+            this->push_back(*it);
+        }
+    }
+
+    vector(std::initializer_list<value_type> init) : m_start{nullptr}, m_end{nullptr} {
+        m_capacity = init.size();
+
+        m_start = Alloc::allocate(alloc, m_capacity);
+        m_end = m_start;
+
+        for (auto it = init.begin(); it != init.end(); ++it) {
+            this->push_back(*it);
+        }
     }
 
     // Current size
