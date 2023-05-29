@@ -94,7 +94,7 @@ class vector
         
         value_type* new_start = Alloc::allocate(alloc, m_capacity);
 
-        size_t sz = size();
+        std::ptrdiff_t sz = size();
         // Move construct existing stuff to new location
         for (std::ptrdiff_t idx = 0; idx < sz; ++idx) {
             new (new_start + idx) value_type(std::move(at(idx)));
