@@ -4,6 +4,7 @@
 #include <iterator>
 #include <utility>
 #include <initializer_list>
+#include <stdexcept>
 
 namespace kg
 {
@@ -202,11 +203,19 @@ class vector
 
     value_type& at(const size_t& idx)
     {
+        if (idx >= size()) {
+            throw std::out_of_range("Accessing out-of-range element");
+        }
+
         return m_start[idx];
     }
 
     const value_type& at(const size_t& idx) const
     {
+        if (idx >= size()) {
+            throw std::out_of_range("Accessing out-of-range element");
+        }
+
         return m_start[idx];
     }
 
@@ -256,6 +265,7 @@ class vector
         // Move construct existing stuff to new location
         for (std::ptrdiff_t idx = 0; idx < sz; ++idx) {
             new (new_start + idx) value_type(std::move(at(idx)));
+            (m_start + idx)->~T();
         }
 
         // Delete older memory

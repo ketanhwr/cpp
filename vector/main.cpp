@@ -1,6 +1,7 @@
 #include <iostream>
 #include <string>
 #include <algorithm>
+#include <vector>
 
 #include "kg_vector.hpp"
 
@@ -32,12 +33,13 @@ struct S {
         return *this;
     }
 
-    S(S&& other) : a{std::move(other.a)}, b{std::move(other.b)}
+    S(S&& other) noexcept
+        : a{std::move(other.a)}, b{std::move(other.b)}
     {
         std::cout << "Move constructor called!" << std::endl;
     }
 
-    S& operator=(S&& other)
+    S& operator=(S&& other) noexcept
     {
         std::cout << "Move-assignment constructor called!" << std::endl;
         a = std::move(other.a);
@@ -54,8 +56,9 @@ struct S {
 int main()
 {
     kg::vector<int> v = {10, 9, 8, 7, 6, 5};
+    std::for_each(v.begin(), v.end(), [](auto& val) { val *= 2; });
 
-    std::cout << "Contents of v before sort are (using for-each): ";
+    std::cout << "Contents of v before sort are (using range-for): ";
     for (const int& a : v) {
         std::cout << a << " ";
     }
@@ -63,11 +66,19 @@ int main()
 
     std::sort(v.begin(), v.end());
 
-    std::cout << "Contents of v after sort are (using for-each): ";
+    std::cout << "Contents of v after sort are (using range-for): ";
     for (const int& a : v) {
         std::cout << a << " ";
     }
     std::cout << std::endl;
+
+    try {
+        std::cout << "v[6] = " << v.at(6) << std::endl;
+    } catch (std::out_of_range& e) {
+        std::cout << "Caught out_of_range: " << e.what() << std::endl;
+    } catch (...) {
+        std::cout << "Generic exception caught!" << std::endl;
+    }
 
     kg::vector<std::string> v2{3, "str"};
     for (int i = 0; i < 2; ++i) {
