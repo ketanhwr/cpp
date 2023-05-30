@@ -161,8 +161,10 @@ class vector
         }
     }
 
-    template <typename InputIt>
-    vector(InputIt first, InputIt last) : m_start{nullptr}, m_end{nullptr}, m_capacity{0} {
+    template <typename InputIt, typename ItCategory = std::iterator_traits<InputIt>::iterator_category>
+    vector(InputIt first, InputIt last)
+        : m_start{nullptr}, m_end{nullptr}, m_capacity{0}
+    {
         for (auto it = first; it != last; ++it) {
             this->push_back(*it);
         }

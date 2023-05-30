@@ -1,7 +1,6 @@
 #include <iostream>
 #include <string>
 #include <algorithm>
-#include <vector>
 
 #include "kg_vector.hpp"
 
@@ -117,6 +116,20 @@ int main()
     std::cout << "Contents of v5 are:" << std::endl;
     for (int i = 0; i < 5; ++i) {
         std::cout << "v5[" << i << "] = {" << v5[i].a << ", " << v5[i].b << "}" << std::endl;
+    }
+
+    kg::vector<kg::vector<int>> vv;
+    for (int i = 0; i < 10; ++i) {
+        vv.push_back(kg::vector<int>(10, i));
+    }
+
+    std::cout << "Contents of vv are: " << std::endl;
+    for (int i = 0; i < 10; ++i) {
+        std::cout << "{ ";
+        for (int j = 0; j < 10; ++j) {
+            std::cout << vv[i][j] << ", ";
+        }
+        std::cout << "}" << std::endl;
     }
 
     return 0;
